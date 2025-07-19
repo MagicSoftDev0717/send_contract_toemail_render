@@ -16,7 +16,7 @@ app.use(bodyParser.json({ limit: '10mb' })); // Increase the limit as needed
 
 // POST endpoint for sending email with attachment
 app.post('/send-contract', async (req, res) => {
-  const { artistEmail, labelEmail, pdfBase64, fileName } = req.body;
+  const { artistEmail, labelEmail, pdfBase64, fileName, contractId } = req.body;
 
   if (!artistEmail || !labelEmail || !pdfBase64 || !fileName) {
     return res.status(400).json({ error: 'Missing required fields.' });
