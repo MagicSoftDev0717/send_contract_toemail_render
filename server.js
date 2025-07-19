@@ -5,8 +5,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 
 // Set up SendGrid API key
-sgMail.setApiKey('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');
-
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 // Create Express app
 const app = express();
 app.use(cors({ origin: 'https://www.correctthecontract.com' }));
