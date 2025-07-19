@@ -30,7 +30,7 @@ app.post('/send-contract', async (req, res) => {
     html: `
       <p>Hello,</p>
       <p>You’ve received a contract proposal from <b>${artistEmail}</b>.</p>
-      <p><a href="https://www.correctthecontract.com/contract-response/${contractId}">Click here</a></p>
+      <p><a href="https://www.correctthecontract.com/contract-response?Contract_ID=${contractId}">Click here</a></p>
       <br>
       <p>Please review the attached contract and respond accordingly.</p>
     `,
