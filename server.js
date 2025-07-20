@@ -17,6 +17,24 @@ app.use(bodyParser.json({ limit: '10mb' })); // Increase the limit as needed
 
 const contractDatabase = {};
 
+async function uploadToGoFile(pdfBase64) {
+  const formData = new FormData();
+  formData.append('file', Buffer.from(pdfBase64, 'base64'), 'contract.pdf');
+
+  // Make the API call to GoFile.io
+  const response = await fetch('https://api.gofile.io/uploadFile', {
+    method: 'POST',
+    body: formData
+  });
+
+  const data = await response.json();
+  if (data.status === 'ok') {
+    return data.data.downloadPage;  // Return the download link for the file
+  } else {
+    throw new Error('Failed to upload file to GoFile.io');
+  }
+}
+
 // POST endpoint for sending email with attachment
 app.post('/send-contract', async (req, res) => {
   const { artistEmail, labelEmail, pdfBase64, fileName, contractId } = req.body;
@@ -26,33 +44,52 @@ app.post('/send-contract', async (req, res) => {
     return res.status(400).json({ error: 'Missing required fields.' });
   }
 
-   // Simulate uploading contract to GoFile.io and storing the URL in contractDatabase
-  const goFileUrl = `https://gofile.io/d/${contractId}`;
-  contractDatabase[contractId] = goFileUrl;  // Store the GoFile URL in contract database
+  async function uploadToGoFile(pdfBase64) {
+    const formData = new FormData();
+    formData.append('file', Buffer.from(pdfBase64, 'base64'), 'contract.pdf');
 
-  const msg = {
-    to: labelEmail,
-    from: 'darrensdesign01@gmail.com',
-    replyTo: artistEmail,
-    subject: 'New Artist Contract for Review',
-    html: `
-      <p>Hello,</p>
-      <p>You’ve received a contract proposal from <b>${artistEmail}</b>.</p>
-      <p>Click here: <a href="https://www.correctthecontract.com/contract-response?${contractId}">www.correctthecontract.com/contract-response</a></p>
-      <p>Please review the attached contract and respond accordingly.</p>
-    `,
-    attachments: [
-      {
-        content: pdfBase64,
-        //content: goFileUrl,
-        filename: fileName,
-        type: 'application/pdf',
-        disposition: 'attachment',
-      },
-    ],
-  };
+    // Make the API call to GoFile.io
+    const response = await fetch('https://api.gofile.io/uploadFile', {
+      method: 'POST',
+      body: formData
+    });
 
+    const data = await response.json();
+    if (data.status === 'ok') {
+      return data.data.downloadPage;  // Return the download link for the file
+    } else {
+      throw new Error('Failed to upload file to GoFile.io');
+    }
+}
   try {
+    const goFileUrl = await uploadToGoFile(pdfBase64);  // Upload PDF and get URL
+
+      // Store the contract URL in the contract database
+    contractDatabase[contractId] = goFileUrl;
+
+    const msg = {
+      to: labelEmail,
+      from: 'darrensdesign01@gmail.com',
+      replyTo: artistEmail,
+      subject: 'New Artist Contract for Review',
+      html: `
+        <p>Hello,</p>
+        <p>You’ve received a contract proposal from <b>${artistEmail}</b>.</p>
+        <p>Click here: <a href="https://www.correctthecontract.com/contract-response?${contractId}">www.correctthecontract.com/contract-response</a></p>
+        <p>Please review the attached contract and respond accordingly.</p>
+      `,
+      attachments: [
+        {
+          content: pdfBase64,
+          //content: goFileUrl,
+          filename: fileName,
+          type: 'application/pdf',
+          disposition: 'attachment',
+        },
+      ],
+    };
+
+  
     // Send email using SendGrid
     const response = await sgMail.send(msg);
     return res.status(200).json({ message: 'Email sent successfully' });
