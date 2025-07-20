@@ -30,7 +30,7 @@ async function uploadToGoFile(pdfBase64, fileName) {
   // Make the API call to GoFile.io
   try {
     // Make the API call to GoFile.io
-    const response = await fetch('https://api.gofile.io/uploadFile', {
+    const response = await fetch('https://api.gofile.io/v1/uploadFile', {
       method: 'POST',
       body: formData
     });
