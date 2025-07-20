@@ -38,7 +38,7 @@ app.post('/send-contract', async (req, res) => {
     html: `
       <p>Hello,</p>
       <p>You’ve received a contract proposal from <b>${artistEmail}</b>.</p>
-      <p>Click here: <a href="https://www.correctthecontract.com/contract-response?Contract_ID=${contractId}">www.correctthecontract.com/contract-response</a></p>
+      <p>Click here: <a href="https://www.correctthecontract.com/contract-response?${contractId}">www.correctthecontract.com/contract-response</a></p>
       <p>Please review the attached contract and respond accordingly.</p>
     `,
     attachments: [
