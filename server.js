@@ -28,15 +28,31 @@ async function uploadToGoFile(pdfBase64, fileName) {
   formData.append('file', buffer, { filename: fileName, contentType: 'application/pdf' });
 
   // Make the API call to GoFile.io
-  const response = await fetch('https://api.gofile.io/uploadFile', {
-    method: 'POST',
-    body: formData
-  });
+  try {
+    // Make the API call to GoFile.io
+    const response = await fetch('https://api.gofile.io/uploadFile', {
+      method: 'POST',
+      body: formData
+    });
 
-  const data = await response.json();
-  if (data.status === 'ok') {
-    return data.data.downloadPage;  // Return the download link for the file
-  } else {
+    // Log the status and the raw response body
+    const responseText = await response.text();  // Get the response as text (HTML or JSON)
+    console.log('API Response:', responseText);
+
+    // Check if the response is in JSON format
+    try {
+      const data = JSON.parse(responseText);
+      if (data.status === 'ok') {
+        return data.data.downloadPage;  // Return the download link for the file
+      } else {
+        throw new Error('Failed to upload file to GoFile.io');
+      }
+    } catch (jsonError) {
+      // If response isn't JSON, log it and throw an error
+      throw new Error(`Failed to parse GoFile.io response as JSON: ${jsonError.message}`);
+    }
+  } catch (error) {
+    console.error('Error during file upload:', error);
     throw new Error('Failed to upload file to GoFile.io');
   }
 }
