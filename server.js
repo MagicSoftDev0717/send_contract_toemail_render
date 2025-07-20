@@ -46,23 +46,6 @@ app.post('/send-contract', async (req, res) => {
     return res.status(400).json({ error: 'Missing required fields.' });
   }
 
-    async function uploadToGoFile(pdfBase64) {
-      const formData = new FormData();
-      formData.append('file', Buffer.from(pdfBase64, 'base64'), 'contract.pdf');
-
-      // Make the API call to GoFile.io
-      const response = await fetch('https://api.gofile.io/uploadFile', {
-        method: 'POST',
-        body: formData
-      });
-
-      const data = await response.json();
-      if (data.status === 'ok') {
-        return data.data.downloadPage;  // Return the download link for the file
-      } else {
-        throw new Error('Failed to upload file to GoFile.io');
-      }
-  }
 
   try {
     const goFileUrl = await uploadToGoFile(pdfBase64);  // Upload PDF and get URL
