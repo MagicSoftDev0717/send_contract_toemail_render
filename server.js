@@ -19,9 +19,13 @@ app.use(bodyParser.json({ limit: '10mb' })); // Increase the limit as needed
 
 const contractDatabase = {};
 
-async function uploadToGoFile(pdfBase64) {
+async function uploadToGoFile(pdfBase64, fileName) {
   const formData = new FormData();
-  formData.append('file', Buffer.from(pdfBase64, 'base64'), 'contract.pdf');
+  // formData.append('file', Buffer.from(pdfBase64, 'base64'), 'contract.pdf');
+  const buffer = Buffer.from(pdfBase64, 'base64');
+
+   // Append the file buffer to the FormData
+  formData.append('file', buffer, { filename: fileName, contentType: 'application/pdf' });
 
   // Make the API call to GoFile.io
   const response = await fetch('https://api.gofile.io/uploadFile', {
