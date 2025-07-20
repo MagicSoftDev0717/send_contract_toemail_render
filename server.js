@@ -106,7 +106,7 @@ app.post('/send-contract', async (req, res) => {
 });
 
 app.get('/contract-response', async (req, res) => {
-  const { contractId } = req.params;
+  const { contractId } = req.query;
   console.log("Received contractId:", contractId);  // Log the contractId
   // Validate contractId and retrieve the contract information
   const contractUrl = contractDatabase[contractId];  // This is where you map contractId to GoFile.io URL
