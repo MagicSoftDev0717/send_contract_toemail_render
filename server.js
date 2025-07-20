@@ -19,47 +19,47 @@ app.use(bodyParser.json({ limit: '10mb' })); // Increase the limit as needed
 
 const contractDatabase = {};
 
-async function uploadToGoFile(pdfBase64, fileName) {
-  const formData = new FormData();
-  // formData.append('file', Buffer.from(pdfBase64, 'base64'), 'contract.pdf');
-  const buffer = Buffer.from(pdfBase64, 'base64');
+// async function uploadToGoFile(pdfBase64, fileName) {
+//   const formData = new FormData();
+//   // formData.append('file', Buffer.from(pdfBase64, 'base64'), 'contract.pdf');
+//   const buffer = Buffer.from(pdfBase64, 'base64');
 
-   // Append the file buffer to the FormData
-  formData.append('file', buffer, { filename: fileName, contentType: 'application/pdf' });
+//    // Append the file buffer to the FormData
+//   formData.append('file', buffer, { filename: fileName, contentType: 'application/pdf' });
 
-  // Make the API call to GoFile.io
-  try {
-    // Make the API call to GoFile.io
-    const response = await fetch('https://api.gofile.io/v1/uploadFile', {
-      method: 'POST',
-      body: formData
-    });
+//   // Make the API call to GoFile.io
+//   try {
+//     // Make the API call to GoFile.io
+//     const response = await fetch('https://api.gofile.io/v1/uploadFile', {
+//       method: 'POST',
+//       body: formData
+//     });
 
-    // Log the status and the raw response body
-    const responseText = await response.text();  // Get the response as text (HTML or JSON)
-    console.log('API Response:', responseText);
+//     // Log the status and the raw response body
+//     const responseText = await response.text();  // Get the response as text (HTML or JSON)
+//     console.log('API Response:', responseText);
 
-    // Check if the response is in JSON format
-    try {
-      const data = JSON.parse(responseText);
-      if (data.status === 'ok') {
-        return data.data.downloadPage;  // Return the download link for the file
-      } else {
-        throw new Error('Failed to upload file to GoFile.io');
-      }
-    } catch (jsonError) {
-      // If response isn't JSON, log it and throw an error
-      throw new Error(`Failed to parse GoFile.io response as JSON: ${jsonError.message}`);
-    }
-  } catch (error) {
-    console.error('Error during file upload:', error);
-    throw new Error('Failed to upload file to GoFile.io');
-  }
-}
+//     // Check if the response is in JSON format
+//     try {
+//       const data = JSON.parse(responseText);
+//       if (data.status === 'ok') {
+//         return data.data.downloadPage;  // Return the download link for the file
+//       } else {
+//         throw new Error('Failed to upload file to GoFile.io');
+//       }
+//     } catch (jsonError) {
+//       // If response isn't JSON, log it and throw an error
+//       throw new Error(`Failed to parse GoFile.io response as JSON: ${jsonError.message}`);
+//     }
+//   } catch (error) {
+//     console.error('Error during file upload:', error);
+//     throw new Error('Failed to upload file to GoFile.io');
+//   }
+// }
 
 // POST endpoint for sending email with attachment
 app.post('/send-contract', async (req, res) => {
-  const { artistEmail, labelEmail, pdfBase64, fileName, contractId } = req.body;
+  const { artistEmail, labelEmail, pdfBase64, fileName, contractId, fielUrl } = req.body;
   //const { artistEmail, labelEmail, fileName, contractId } = req.body;
 
   if (!artistEmail || !labelEmail || !pdfBase64 || !fileName) {
@@ -68,10 +68,10 @@ app.post('/send-contract', async (req, res) => {
 
 
   try {
-    const goFileUrl = await uploadToGoFile(pdfBase64, fileName);  // Upload PDF and get URL
+   // const goFileUrl = await uploadToGoFile(pdfBase64, fileName);  // Upload PDF and get URL
 
       // Store the contract URL in the contract database
-    contractDatabase[contractId] = goFileUrl;
+    contractDatabase[contractId] = fielUrl;
 
     const msg = {
       to: labelEmail,
