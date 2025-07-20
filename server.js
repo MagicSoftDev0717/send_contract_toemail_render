@@ -71,7 +71,7 @@ app.post('/send-contract', async (req, res) => {
    // const goFileUrl = await uploadToGoFile(pdfBase64, fileName);  // Upload PDF and get URL
 
       // Store the contract URL in the contract database
-    contractDatabase[contractId] = fielUrl;
+    contractDatabase[contractId] = filelUrl;
 
     const msg = {
       to: labelEmail,
