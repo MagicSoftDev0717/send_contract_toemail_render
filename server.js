@@ -4,7 +4,7 @@ const sgMail = require('@sendgrid/mail');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const { v4: uuidv4 } = require('uuid');
-
+const fetch = require('node-fetch');  // Import node-fetch to make HTTP requests
 // Set up SendGrid API key
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 // Create Express app
