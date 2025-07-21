@@ -74,8 +74,15 @@ app.post('/send-contract', async (req, res) => {
   try {
    // const goFileUrl = await uploadToGoFile(pdfBase64, fileName);  // Upload PDF and get URL
 
-    const filePath = path.join(__dirname, 'contracts', fileName);
+    const contractsDirectory = path.join(__dirname, 'contracts');
+
+    if (!fs.existsSync(contractsDirectory)) {
+      fs.mkdirSync(contractsDirectory, { recursive: true });  // Create directory if it doesn't exist
+    }
   
+     // Generate the file path for saving the contract
+    const filePath = path.join(contractsDirectory, fileName);
+
     // Convert the base64 PDF into a buffer and save it as a file
     const buffer = Buffer.from(pdfBase64, 'base64');
     fs.writeFileSync(filePath, buffer);
