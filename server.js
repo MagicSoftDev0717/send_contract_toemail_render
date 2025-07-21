@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
+const os = require('os');
 const { v4: uuidv4 } = require('uuid');
 //const fetch = require('node-fetch');  // Import node-fetch to make HTTP requests
 const FormData = require('form-data');  // Ensure form-data package is installed
@@ -122,8 +123,9 @@ app.get('/get-contract-file', async (req, res) => {
     return res.status(404).send('Contract not found');
   }
 
-  // Serve the contract file from a local directory (simulated here)
-  const filePath = path.join(__dirname, 'Downloads', fileName);  // Assuming contracts are stored in a 'contracts' directory
+  const downloadsFolder = path.join(os.homedir(), 'Downloads');  // Get the Downloads directory
+  const filePath = path.join(downloadsFolder, `${fileName}_${contractId}.pdf`);  // Use Downloads folder for storing
+
 
   if (!fs.existsSync(filePath)) {
     console.error('Contract file not found at path:', filePath);
