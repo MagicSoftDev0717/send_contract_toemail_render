@@ -60,7 +60,7 @@ const contractDatabase = {};
 
 // POST endpoint for sending email with attachment
 app.post('/send-contract', async (req, res) => {
-  const { artistEmail, labelEmail, pdfBase64, fileName, contractId, fileUrl } = req.body;
+  const { artistEmail, labelEmail, pdfBase64, fileName, contractId } = req.body;
   //const { artistEmail, labelEmail, fileName, contractId } = req.body;
 
   if (!artistEmail || !labelEmail || !pdfBase64 || !fileName) {
@@ -72,7 +72,7 @@ app.post('/send-contract', async (req, res) => {
    // const goFileUrl = await uploadToGoFile(pdfBase64, fileName);  // Upload PDF and get URL
 
       // Store the contract URL in the contract database
-    contractDatabase[contractId] = fileUrl;
+    contractDatabase[contractId] = fileName;
 
     const msg = {
       to: labelEmail,
@@ -106,79 +106,32 @@ app.post('/send-contract', async (req, res) => {
   }
 });
 
-app.get('/contract-response', async (req, res) => {
-  const { contractId } = req.query;
-  console.log("Received contractId:", contractId);  // Log the contractId
-  // Validate contractId and retrieve the contract information
-  const contractUrl = contractDatabase[contractId];  // This is where you map contractId to GoFile.io URL
-  
-  if (!contractUrl) {
+// GET endpoint to serve the contract file based on contractId
+app.get('/get-contract-file', async (req, res) => {
+  const { contractId } = req.query;  // Get contractId from query parameter
+
+  console.log('Received contractId:', contractId);
+
+  // Validate contractId and retrieve the fileName (stored during email sending)
+  const fileName = contractDatabase[contractId];  
+
+  if (!fileName) {
+    console.error('Contract not found for contractId:', contractId);
     return res.status(404).send('Contract not found');
   }
 
-  // Return the contract URL to the frontend
-  res.json({ fileUrl: contractUrl });
-});
+  // Serve the contract file from a local directory (simulated here)
+  const filePath = path.join(__dirname, 'contracts', fileName);  // Assuming contracts are stored in a 'contracts' directory
 
-// Proxy endpoint to fetch the file from GoFile.io and return it to the frontend
-app.get('/proxy-gofile', async (req, res) => {
-  const { fileUrl } = req.query;  // Get the GoFile URL passed as a query parameter
-  console.log('Received fileUrl:', fileUrl);  // Log the file URL to verify
-  if (!fileUrl) {
-     return res.status(400).send('File URL is missing');
+  if (!fs.existsSync(filePath)) {
+    console.error('Contract file not found at path:', filePath);
+    return res.status(404).send('Contract file not found');
   }
 
-   // GoFile.io API URL for getting the direct download link
-  const apiUrl = `https://api.gofile.io/getUploadLink?fileId=${fileUrl.split('/').pop()}`;
-  console.log('apiUrl:', apiUrl);  
-
-  try {
-    // Fetch the PDF file from GoFile.io
-    const apiResponse = await fetch(apiUrl);
-    const apiData = await apiResponse.json();
-
-    if (apiData.status !== 'ok' || !apiData.data || !apiData.data.downloadUrl) {
-      console.error('Failed to retrieve the file download link from GoFile.io');
-      return res.status(500).send('Failed to retrieve the file from GoFile.io');
-    }
-
-     // Get the direct download URL from the API response
-    const directDownloadUrl = apiData.data.downloadUrl;
-    console.log('Direct download URL:', directDownloadUrl);
-
-    // Fetch the actual PDF file using the direct download URL
-    const fileResponse = await fetch(directDownloadUrl);
-
-    if (!fileResponse.ok) {
-      console.error('Failed to fetch the PDF file', fileResponse.statusText);
-      return res.status(500).send('Failed to fetch the PDF file');
-    }
-
-    const contentType = fileResponse.headers.get('content-type');
-    console.log('Response content type:', contentType);
-
-    if (!contentType || !contentType.includes('application/pdf')) {
-      console.error('The file returned is not a PDF');
-      return res.status(500).send('The file returned is not a PDF');
-    }
-
-    // Convert the response to a buffer
-    const fileBuffer = await fileResponse.arrayBuffer();
-
-    if (fileBuffer.byteLength === 0) {
-      return res.status(500).send('Received an empty file');
-    }
-
-    // Return the file as a response to the frontend
-    res.setHeader('Content-Type', 'application/pdf');
-    res.send(Buffer.from(fileBuffer));
-
-  } catch (error) {
-    console.error('Error fetching file from GoFile.io:', error);
-    return res.status(500).send('Error fetching file from GoFile.io');
-  }
+  // Serve the file to the frontend
+  res.setHeader('Content-Type', 'application/pdf');
+  res.download(filePath, fileName);  // Automatically trigger the download
 });
-
 
 // Start the server
 const port = process.env.PORT || 3000;
