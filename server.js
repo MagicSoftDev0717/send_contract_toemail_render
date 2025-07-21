@@ -134,7 +134,6 @@ app.get('/proxy-gofile', async (req, res) => {
     // Fetch the PDF file from GoFile.io
     const apiResponse = await fetch(apiUrl);
     const apiData = await apiResponse.json();
-    console.log('GoFile.io response status:', response.status);  // Log the response status
 
     if (apiData.status !== 'ok' || !apiData.data || !apiData.data.downloadUrl) {
       console.error('Failed to retrieve the file download link from GoFile.io');
