@@ -59,7 +59,7 @@ const contractDatabase = {};
 
 // POST endpoint for sending email with attachment
 app.post('/send-contract', async (req, res) => {
-  const { artistEmail, labelEmail, pdfBase64, fileName, contractId, filelUrl } = req.body;
+  const { artistEmail, labelEmail, pdfBase64, fileName, contractId, fileUrl } = req.body;
   //const { artistEmail, labelEmail, fileName, contractId } = req.body;
 
   if (!artistEmail || !labelEmail || !pdfBase64 || !fileName) {
@@ -71,7 +71,7 @@ app.post('/send-contract', async (req, res) => {
    // const goFileUrl = await uploadToGoFile(pdfBase64, fileName);  // Upload PDF and get URL
 
       // Store the contract URL in the contract database
-    contractDatabase[contractId] = filelUrl;
+    contractDatabase[contractId] = fileUrl;
 
     const msg = {
       to: labelEmail,
