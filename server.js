@@ -165,7 +165,7 @@ app.post('/update-contract-status', async (req, res) => {
   }
 
   // Load the contract PDF
-  const contractFilePath  = path.join(__dirname, 'contracts', contractFileName);
+  const contractFilePath  = path.join(__dirname, 'contracts', `${contractId}.pdf`);
   const existingPdfBytes = fs.readFileSync(contractFilePath );
 
   try {
