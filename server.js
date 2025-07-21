@@ -164,28 +164,55 @@ app.post('/update-contract-status', async (req, res) => {
   }
 
   // Load the contract PDF
-  const filePath = path.join(__dirname, 'contracts', contractFileName);
-  const existingPdfBytes = fs.readFileSync(filePath);
+  const contractFilePath  = path.join(__dirname, 'contracts', contractFileName);
+  const existingPdfBytes = fs.readFileSync(contractFilePath );
 
   try {
-    const pdfDoc = await PDFLib.PDFDocument.load(existingPdfBytes);
-    const page = pdfDoc.getPages()[0]; // Assuming the status should be added to the first page
+    // Load the PDF file
+    const pdfDoc = await PDFDocument.load(existingPdfBytes);
+    const pages = pdfDoc.getPages();
 
-    // Add the status to the page
-    page.drawText(`Status: ${status}`, {
-      x: 50,
-      y: 100,
-      size: 24,
-      color: PDFLib.rgb(0, 0, 0)
+    // Log total number of pages to ensure the second page exists
+    if (pages.length < 2) {
+      return res.status(400).send('PDF must have at least 2 pages');
+    }
+
+    const secondPage = pages[1];  // Reference the second page (index 1)
+
+    // Define positions dynamically based on selected status
+    let positionX = 0;
+    let positionY = 0;
+
+    // Conditional statements for each status
+    if (status === 'Accept') {
+      positionX = 50;
+      positionY = 680;  // Adjust this position based on where "Accept" should go
+    } else if (status === 'Reject') {
+      positionX = 100;
+      positionY = 680;  // Adjust this position based on where "Reject" should go
+    } else if (status === 'CounterOffer') {
+      positionX = 150;
+      positionY = 680;  // Adjust this position based on where "CounterOffer" should go
+    } else {
+      return res.status(400).send('Invalid status');
+    }
+
+    // Draw the checkmark next to the selected option on the second page
+    secondPage.drawText(` ${status}`, {
+      x: positionX,
+      y: positionY,
+      size: 12,
+      color: PDFDocument.rgb(0, 0, 0)
     });
-
     // Save the modified PDF
-    const pdfBytes = await pdfDoc.save();
-    fs.writeFileSync(filePath, pdfBytes); // Save the file
+    const modifiedPdfBytes = await pdfDoc.save();
 
-    contractStatusDatabase[contractId] = status; // Store the contract status
+    // Save the updated PDF in the same location
+    fs.writeFileSync(contractFilePath, modifiedPdfBytes);
 
-    res.status(200).send('Contract status updated successfully');
+    // Return the modified PDF to the frontend (or a download URL)
+    res.setHeader('Content-Type', 'application/pdf');
+    res.send(modifiedPdfBytes);
   } catch (error) {
     console.error('Error updating contract status:', error);
     res.status(500).send('Error updating contract status');
