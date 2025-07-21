@@ -6,7 +6,8 @@ const cors = require('cors');
 const { v4: uuidv4 } = require('uuid');
 //const fetch = require('node-fetch');  // Import node-fetch to make HTTP requests
 const FormData = require('form-data');  // Ensure form-data package is installed
-const { fetch } = require('undici');
+// const { fetch } = require('undici');
+const fetch = require('undici').fetch;
 // Set up SendGrid API key
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 // Create Express app
