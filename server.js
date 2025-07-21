@@ -119,6 +119,28 @@ app.get('/contract-response', async (req, res) => {
   res.json({ fileUrl: contractUrl });
 });
 
+// Proxy endpoint to fetch the file from GoFile.io and return it to the frontend
+app.get('/proxy-gofile', async (req, res) => {
+  const { fileUrl } = req.query;  // Get the GoFile URL passed as a query parameter
+
+  try {
+    // Fetch the PDF file from GoFile.io
+    const response = await fetch(fileUrl);
+
+    if (!response.ok) {
+      return res.status(500).send('Failed to fetch the file from GoFile.io');
+    }
+
+    // Return the file as a response
+    const fileBuffer = await response.buffer();
+    res.setHeader('Content-Type', 'application/pdf');
+    res.send(fileBuffer);  // Send the file to the frontend
+  } catch (error) {
+    console.error('Error fetching file from GoFile.io:', error);
+    res.status(500).send('Error fetching file from GoFile.io');
+  }
+});
+
 
 // Start the server
 const port = process.env.PORT || 3000;
