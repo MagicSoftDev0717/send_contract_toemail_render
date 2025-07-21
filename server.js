@@ -134,7 +134,7 @@ app.get('/get-contract-file', async (req, res) => {
 
   // Serve the file to the frontend
   res.setHeader('Content-Type', 'application/pdf');
-  res.download(filePath, fileName);  // Automatically trigger the download
+  res.download(filePath, `${fileName}_${contractId}.pdf`);  // Automatically trigger download
 });
 
 // Start the server
