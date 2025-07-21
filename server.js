@@ -12,6 +12,7 @@ const FormData = require('form-data');  // Ensure form-data package is installed
 // const { fetch } = require('undici');
 const fetch = require('undici').fetch;
 const PDFLib = require('pdf-lib'); // Make sure to install this using npm install pdf-lib
+const { PDFDocument } = require('pdf-lib');
 
 // Set up SendGrid API key
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
