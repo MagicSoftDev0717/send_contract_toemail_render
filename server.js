@@ -11,6 +11,8 @@ const { v4: uuidv4 } = require('uuid');
 const FormData = require('form-data');  // Ensure form-data package is installed
 // const { fetch } = require('undici');
 const fetch = require('undici').fetch;
+const PDFLib = require('pdf-lib'); // Make sure to install this using npm install pdf-lib
+
 // Set up SendGrid API key
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 // Create Express app
@@ -148,6 +150,45 @@ app.get('/get-contract-file', async (req, res) => {
   // Serve the file to the frontend
   res.setHeader('Content-Type', 'application/pdf');
   res.download(filePath, fileName);  // Automatically trigger download
+});
+
+// Route for updating contract status
+app.post('/update-contract-status', async (req, res) => {
+  const { contractId, status } = req.body;
+
+  // Find the contract file associated with the contractId
+  const contractFileName = contractDatabase[contractId];
+  if (!contractFileName) {
+    return res.status(404).send('Contract not found');
+  }
+
+  // Load the contract PDF
+  const filePath = path.join(__dirname, 'contracts', contractFileName);
+  const existingPdfBytes = fs.readFileSync(filePath);
+
+  try {
+    const pdfDoc = await PDFLib.PDFDocument.load(existingPdfBytes);
+    const page = pdfDoc.getPages()[0]; // Assuming the status should be added to the first page
+
+    // Add the status to the page
+    page.drawText(`Status: ${status}`, {
+      x: 50,
+      y: 100,
+      size: 24,
+      color: PDFLib.rgb(0, 0, 0)
+    });
+
+    // Save the modified PDF
+    const pdfBytes = await pdfDoc.save();
+    fs.writeFileSync(filePath, pdfBytes); // Save the file
+
+    contractStatusDatabase[contractId] = status; // Store the contract status
+
+    res.status(200).send('Contract status updated successfully');
+  } catch (error) {
+    console.error('Error updating contract status:', error);
+    res.status(500).send('Error updating contract status');
+  }
 });
 
 // Start the server
