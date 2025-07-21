@@ -141,7 +141,7 @@ app.get('/get-contract-file', async (req, res) => {
   }
 
   const downloadsFolder = path.join(__dirname, 'contracts');  // Get the Downloads directory
-  const filePath = path.join(downloadsFolder, `${contractId}.pdf`);  // Use Downloads folder for storing
+  const filePath = path.join(downloadsFolder, fileName);  // Use Downloads folder for storing
 
 
   if (!fs.existsSync(filePath)) {
@@ -150,12 +150,12 @@ app.get('/get-contract-file', async (req, res) => {
   }
 
   // Serve the file to the frontend
-  // res.setHeader('Content-Type', 'application/pdf');
-  // res.download(filePath, `${contractId}.pdf`);  // Automatically trigger download
+   res.setHeader('Content-Type', 'application/pdf');
+   res.download(filePath, fileName);  // Automatically trigger download
 
-  const fileStream = fs.createReadStream(filePath);
-  res.setHeader('Content-Type', 'application/pdf');
-  fileStream.pipe(res);
+  // const fileStream = fs.createReadStream(filePath);
+  // res.setHeader('Content-Type', 'application/pdf');
+  // fileStream.pipe(res);
 });
 
 // Route for updating contract status
