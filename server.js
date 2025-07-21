@@ -25,6 +25,7 @@ app.use(bodyParser.json({ limit: '10mb' })); // Increase the limit as needed
 
 const contractDatabase = {};
 
+const contractStatusDatabase = {};
 // async function uploadToGoFile(pdfBase64, fileName) {
 //   const formData = new FormData();
 //   // formData.append('file', Buffer.from(pdfBase64, 'base64'), 'contract.pdf');
