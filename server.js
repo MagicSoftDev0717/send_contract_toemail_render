@@ -126,14 +126,19 @@ app.get('/proxy-gofile', async (req, res) => {
   if (!fileUrl) {
      return res.status(400).send('File URL is missing');
   }
+
+   // GoFile.io API URL for getting the direct download link
+  const apiUrl = `https://api.gofile.io/getUploadLink?fileId=${fileUrl.split('/').pop()}`;
+
   try {
     // Fetch the PDF file from GoFile.io
-    const response = await fetch(fileUrl);
+    const response = await fetch(apiUrl);
+    const apiData = await apiResponse.json();
     console.log('GoFile.io response status:', response.status);  // Log the response status
 
-    if (!response.ok) {
-      console.error('Failed to fetch the file from GoFile.io', response.statusText);
-      return res.status(500).send('Failed to fetch the file from GoFile.io');
+    if (apiData.status !== 'ok' || !apiData.data || !apiData.data.downloadUrl) {
+      console.error('Failed to retrieve the file download link from GoFile.io');
+      return res.status(500).send('Failed to retrieve the file from GoFile.io');
     }
 
     const contentType = response.headers.get('content-type');
@@ -144,19 +149,32 @@ app.get('/proxy-gofile', async (req, res) => {
       return res.status(500).send('The file returned is not a PDF');
     }
 
-    // Return the file as a response
-    const fileBuffer = await response.arrayBuffer();
-    console.log('File size:', fileBuffer.byteLength);
+     // Get the direct download URL from the API response
+    const directDownloadUrl = apiData.data.downloadUrl;
+    console.log('Direct download URL:', directDownloadUrl);
 
-    if (fileBuffer.byteLength === 0) {
-      return res.status(500).send('Received an empty file from GoFile.io');
+    // Fetch the actual PDF file using the direct download URL
+    const fileResponse = await fetch(directDownloadUrl);
+
+    if (!fileResponse.ok) {
+      console.error('Failed to fetch the PDF file', fileResponse.statusText);
+      return res.status(500).send('Failed to fetch the PDF file');
     }
 
+    // Convert the response to a buffer
+    const fileBuffer = await fileResponse.arrayBuffer();
+
+    if (fileBuffer.byteLength === 0) {
+      return res.status(500).send('Received an empty file');
+    }
+
+    // Return the file as a response to the frontend
     res.setHeader('Content-Type', 'application/pdf');
-    res.send(fileBuffer);  // Send the file to the frontend
+    res.send(Buffer.from(fileBuffer));
+
   } catch (error) {
     console.error('Error fetching file from GoFile.io:', error);
-    res.status(500).send('Error fetching file from GoFile.io');
+    return res.status(500).send('Error fetching file from GoFile.io');
   }
 });
 
