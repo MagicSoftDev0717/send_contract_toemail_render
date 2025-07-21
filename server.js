@@ -140,14 +140,6 @@ app.get('/proxy-gofile', async (req, res) => {
       return res.status(500).send('Failed to retrieve the file from GoFile.io');
     }
 
-    const contentType = response.headers.get('content-type');
-    console.log('Response content type:', contentType);
-
-    if (!contentType || !contentType.includes('application/pdf')) {
-      console.error('The file returned is not a PDF');
-      return res.status(500).send('The file returned is not a PDF');
-    }
-
      // Get the direct download URL from the API response
     const directDownloadUrl = apiData.data.downloadUrl;
     console.log('Direct download URL:', directDownloadUrl);
@@ -158,6 +150,14 @@ app.get('/proxy-gofile', async (req, res) => {
     if (!fileResponse.ok) {
       console.error('Failed to fetch the PDF file', fileResponse.statusText);
       return res.status(500).send('Failed to fetch the PDF file');
+    }
+
+    const contentType = fileResponse.headers.get('content-type');
+    console.log('Response content type:', contentType);
+
+    if (!contentType || !contentType.includes('application/pdf')) {
+      console.error('The file returned is not a PDF');
+      return res.status(500).send('The file returned is not a PDF');
     }
 
     // Convert the response to a buffer
