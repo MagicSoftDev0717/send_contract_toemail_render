@@ -130,6 +130,7 @@ app.get('/proxy-gofile', async (req, res) => {
 
    // GoFile.io API URL for getting the direct download link
   const apiUrl = `https://api.gofile.io/getUploadLink?fileId=${fileUrl.split('/').pop()}`;
+  console.log('apiUrl:', apiUrl);  
 
   try {
     // Fetch the PDF file from GoFile.io
