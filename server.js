@@ -198,7 +198,7 @@ app.post('/update-contract-status', async (req, res) => {
     }
 
     // Draw the checkmark next to the selected option on the second page
-    secondPage.drawText(` ${status}`, {
+    secondPage.drawText(`• ${status}`, {
       x: positionX,
       y: positionY,
       size: 12,
