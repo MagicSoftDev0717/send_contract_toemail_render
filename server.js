@@ -132,7 +132,7 @@ app.get('/proxy-gofile', async (req, res) => {
     }
 
     // Return the file as a response
-    const fileBuffer = await response.buffer();
+    const fileBuffer = await response.arrayBuffer();
     res.setHeader('Content-Type', 'application/pdf');
     res.send(fileBuffer);  // Send the file to the frontend
   } catch (error) {
