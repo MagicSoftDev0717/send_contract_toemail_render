@@ -77,6 +77,12 @@ app.post('/send-contract', async (req, res) => {
       // Store the contract URL in the contract database
     contractDatabase[contractId] = fileName;
 
+    const filePath = path.join(__dirname, 'contracts', fileName);
+  
+    // Convert the base64 PDF into a buffer and save it as a file
+    const buffer = Buffer.from(pdfBase64, 'base64');
+    fs.writeFileSync(filePath, buffer);
+
     const msg = {
       to: labelEmail,
       from: 'darrensdesign01@gmail.com',
@@ -123,8 +129,8 @@ app.get('/get-contract-file', async (req, res) => {
     return res.status(404).send('Contract not found');
   }
 
-  const downloadsFolder = path.join(os.homedir(), 'Downloads');  // Get the Downloads directory
-  const filePath = path.join(downloadsFolder, `${fileName}_${contractId}.pdf`);  // Use Downloads folder for storing
+  const downloadsFolder = path.join(os.homedir(), 'contracts');  // Get the Downloads directory
+  const filePath = path.join(downloadsFolder, fileName);  // Use Downloads folder for storing
 
 
   if (!fs.existsSync(filePath)) {
@@ -134,7 +140,7 @@ app.get('/get-contract-file', async (req, res) => {
 
   // Serve the file to the frontend
   res.setHeader('Content-Type', 'application/pdf');
-  res.download(filePath, `${fileName}_${contractId}.pdf`);  // Automatically trigger download
+  res.download(filePath, fileName);  // Automatically trigger download
 });
 
 // Start the server
