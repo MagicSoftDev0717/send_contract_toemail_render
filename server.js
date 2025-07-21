@@ -150,8 +150,12 @@ app.get('/get-contract-file', async (req, res) => {
   }
 
   // Serve the file to the frontend
+  // res.setHeader('Content-Type', 'application/pdf');
+  // res.download(filePath, `${contractId}.pdf`);  // Automatically trigger download
+
+  const fileStream = fs.createReadStream(filePath);
   res.setHeader('Content-Type', 'application/pdf');
-  res.download(filePath, `${contractId}.pdf`);  // Automatically trigger download
+  fileStream.pipe(res);
 });
 
 // Route for updating contract status
