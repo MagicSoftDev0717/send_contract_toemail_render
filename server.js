@@ -150,12 +150,8 @@ app.get('/get-contract-file', async (req, res) => {
   }
 
   // Serve the file to the frontend
-   res.setHeader('Content-Type', 'application/pdf');
-   res.download(filePath, fileName);  // Automatically trigger download
-
-  // const fileStream = fs.createReadStream(filePath);
-  // res.setHeader('Content-Type', 'application/pdf');
-  // fileStream.pipe(res);
+  res.setHeader('Content-Type', 'application/pdf');
+  res.download(filePath, fileName);  // Automatically trigger download
 });
 
 // Route for updating contract status
@@ -169,7 +165,7 @@ app.post('/update-contract-status', async (req, res) => {
   }
 
   // Load the contract PDF
-  const contractFilePath  = path.join(__dirname, 'contracts', `${contractId}.pdf`);
+  const contractFilePath  = path.join(__dirname, 'contracts', contractFileName);
   const existingPdfBytes = fs.readFileSync(contractFilePath );
 
   try {
