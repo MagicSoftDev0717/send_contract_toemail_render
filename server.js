@@ -85,48 +85,47 @@ app.post('/send-contract-to-label', async (req, res) => {
   }
 });
 
-// GET endpoint to serve the contract file based on contractId
+// GET endpoint to serve the contract metadata (JSON)
 app.get('/get-contract-file', async (req, res) => {
-  const { contractId } = req.query;  // Get contractId from query parameter
+  const { contractId } = req.query; // Get contractId from query parameter
 
   console.log('Received contractId:', contractId);
 
-  // Validate contractId and retrieve the fileName (stored during email sending)
-  const contract  = contractDatabase[contractId];  
+  const contract = contractDatabase[contractId];
 
-  if (!contract ) {
+  if (!contract) {
     console.error('Contract not found for contractId:', contractId);
     return res.status(404).send('Contract not found');
   }
 
-   const { fileName, artistName, artistStreet, artistState, artistCountry, artistZip, artistEmail } = contract;
+  // Return the contract data as JSON (metadata)
+  res.json(contract);
+});
 
-  const downloadsFolder = path.join(__dirname, 'contracts');  // Get the Downloads directory
-  const filePath = path.join(downloadsFolder, fileName);  // Use Downloads folder for storing
 
-  // Send the file and artist data together
-  const contractData = {
-    fileUrl: filePath,
-    artistName,
-    artistStreet,
-    artistState,
-    artistCountry,
-    artistZip,
-    artistEmail,
-  };
+// GET endpoint to serve the contract file (PDF)
+app.get('/get-contract-pdf', async (req, res) => {
+  const { contractId } = req.query;  // Get contractId from query parameter
 
-  res.json(contractData);  // Send contract data as JSON
+  console.log('Received contractId:', contractId);
+
+  const contract = contractDatabase[contractId];
+
+  if (!contract) {
+    console.error('Contract not found for contractId:', contractId);
+    return res.status(404).send('Contract not found');
+  }
+
+  const filePath = path.join(__dirname, 'contracts', contract.fileName);
 
   if (!fs.existsSync(filePath)) {
     console.error('Contract file not found at path:', filePath);
     return res.status(404).send('Contract file not found');
   }
 
-  // Serve the file to the frontend
   res.setHeader('Content-Type', 'application/pdf');
-  res.download(filePath, fileName);  // Automatically trigger download
+  res.download(filePath);  // Serve the contract file
 });
-
 
 // Route for updating contract status
 app.post('/update-contract-status', async (req, res) => {
