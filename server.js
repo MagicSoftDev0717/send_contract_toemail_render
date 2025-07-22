@@ -30,7 +30,7 @@ const contractDatabase = {};
 // POST endpoint for sending email with attachment
 
 app.post('/send-contract-to-label', async (req, res) => {
-  const { artistName, artistStreet, artistState, artistCountry, artistZip, artistEmail, labelName, labelStreet, labelState, labelCountry, labelZip, labelEmail, pdfBase64, fileName, contractId } = req.body;
+  const { artistName, artistStreet, artistCity, artistState, artistCountry, artistZip, artistEmail, labelName, labelStreet, labelCity, labelState, labelCountry, labelZip, labelEmail, pdfBase64, fileName, contractId } = req.body;
 
   if (!artistEmail || !labelEmail || !pdfBase64 || !fileName) {
     return res.status(400).json({ error: 'Missing required fields.' });
