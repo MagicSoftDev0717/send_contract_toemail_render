@@ -195,26 +195,60 @@ app.post('/update-contract-status', async (req, res) => {
 
 
 
-// POST endpoint to send contract back to the artist
-app.post('/send-contract-to-artist', async (req, res) => {
-  const { artistEmail, labelEmail, pdfBase64, fileName, contractId, fileUrl } = req.body;
+// POST endpoint for sending email with attachment
 
+app.post('/send-contract-to-artist', async (req, res) => {
+  // const { artistName, artistStreet, artistState, artistCountry, artistZip, artistEmail, labelName, labelStreet, labelState, labelCountry, labelZip, labelEmail, pdfBase64, fileName, contractId } = req.body;
+  const { artistEmail, labelEmail, pdfBase64, fileName, contractId } = req.body;
   if (!artistEmail || !labelEmail || !pdfBase64 || !fileName) {
     return res.status(400).json({ error: 'Missing required fields.' });
   }
 
   try {
-    // Send the contract back to the artist
+
+    // const contractsDirectory = path.join(__dirname, 'contracts');
+
+    // if (!fs.existsSync(contractsDirectory)) {
+    //   fs.mkdirSync(contractsDirectory, { recursive: true });  // Create directory if it doesn't exist
+    // }
+  
+     // Generate the file path for saving the contract
+    // const filePath = path.join(contractsDirectory, fileName);
+
+    // Convert the base64 PDF into a buffer and save it as a file
+    // const buffer = Buffer.from(pdfBase64, 'base64');
+    // fs.writeFileSync(filePath, buffer);
+
+    // Store the contract URL in the contract database
+    // contractDatabase[contractId] = { fileName, artistName, artistStreet, artistState, artistCountry, artistZip, artistEmail, labelName, labelStreet, labelState, labelCountry, labelZip, labelEmail };
+
+    // Create the message to send to the artist
+    let emailSubject = '';
+    let emailBody = '';
+
+    if (isContractApproved) {
+      emailSubject = 'Your Contract Has Been Approved!';
+      emailBody = `
+        <p>Good news! The label has approved your contract proposal.</p>
+        <p>You can now proceed with the next steps. Please find the contract details below and attached.</p>
+        <p>Click here to review the finalized contract: <a href="https://www.correctthecontract.com/contract-response?contractId=${contractId}">View Contract</a></p>
+      `;
+    } else {
+      emailSubject = 'Contract Proposal for Review';
+      emailBody = `
+        <p>Hello,</p>
+        <p>The label has reviewed your contract proposal and is now ready for your feedback.</p>
+        <p>Please review the attached contract and respond accordingly.</p>
+        <p>Click here to review the contract: <a href="https://www.correctthecontract.com/contract-response?contractId=${contractId}">View Contract</a></p>
+      `;
+    }
+
     const msg = {
       to: artistEmail,
       from: 'darrensdesign01@gmail.com',
-      subject: 'Contract Signed by Label',
-      html: `
-        <p>Hello,</p>
-        <p>The contract has been reviewed and signed by the label.</p>
-        <p>You can download it here: <a href="${fileUrl}">${fileUrl}</a></p>
-        <p>Best regards,</p>
-      `,
+      replyTo: labelEmail,
+      subject: emailSubject,
+      html: emailBody,
       attachments: [
         {
           content: pdfBase64,
@@ -225,11 +259,13 @@ app.post('/send-contract-to-artist', async (req, res) => {
       ],
     };
 
-    await sgMail.send(msg);
-    return res.status(200).json({ message: 'Contract sent back to the artist successfully' });
+  
+    // Send email using SendGrid
+    const response = await sgMail.send(msg);
+    return res.status(200).json({ message: 'Email sent successfully' });
   } catch (error) {
-    console.error('Error sending email to artist:', error);
-    return res.status(500).json({ error: 'Failed to send email to artist' });
+    console.error('Error sending email:', error);
+    return res.status(500).json({ error: 'Failed to send email' });
   }
 });
 
