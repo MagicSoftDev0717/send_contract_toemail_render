@@ -104,6 +104,18 @@ app.get('/get-contract-file', async (req, res) => {
   const downloadsFolder = path.join(__dirname, 'contracts');  // Get the Downloads directory
   const filePath = path.join(downloadsFolder, fileName);  // Use Downloads folder for storing
 
+  // Send the file and artist data together
+  const contractData = {
+    fileUrl: filePath,
+    artistName,
+    artistStreet,
+    artistState,
+    artistCountry,
+    artistZip,
+    artistEmail,
+  };
+
+  res.json(contractData);  // Send contract data as JSON
 
   if (!fs.existsSync(filePath)) {
     console.error('Contract file not found at path:', filePath);
