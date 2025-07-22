@@ -199,7 +199,7 @@ app.post('/update-contract-status', async (req, res) => {
 
 app.post('/send-contract-to-artist', async (req, res) => {
   // const { artistName, artistStreet, artistState, artistCountry, artistZip, artistEmail, labelName, labelStreet, labelState, labelCountry, labelZip, labelEmail, pdfBase64, fileName, contractId } = req.body;
-  const { artistEmail, labelEmail, pdfBase64, fileName, contractId } = req.body;
+  const { artistEmail, labelEmail, pdfBase64, fileName } = req.body;
   if (!artistEmail || !labelEmail || !pdfBase64 || !fileName) {
     return res.status(400).json({ error: 'Missing required fields.' });
   }
@@ -231,7 +231,6 @@ app.post('/send-contract-to-artist', async (req, res) => {
       emailBody = `
         <p>Good news! The label has approved your contract proposal.</p>
         <p>You can now proceed with the next steps. Please find the contract details below and attached.</p>
-        <p>Click here to review the finalized contract: <a href="https://www.correctthecontract.com/contract-response?contractId=${contractId}">View Contract</a></p>
       `;
     } else {
       emailSubject = 'Contract Proposal for Review';
@@ -239,7 +238,6 @@ app.post('/send-contract-to-artist', async (req, res) => {
         <p>Hello,</p>
         <p>The label has reviewed your contract proposal and is now ready for your feedback.</p>
         <p>Please review the attached contract and respond accordingly.</p>
-        <p>Click here to review the contract: <a href="https://www.correctthecontract.com/contract-response?contractId=${contractId}">View Contract</a></p>
       `;
     }
 
