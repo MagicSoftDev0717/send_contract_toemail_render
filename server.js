@@ -198,7 +198,7 @@ app.post('/update-contract-status', async (req, res) => {
 // POST endpoint for sending email with attachment
 
 app.post('/send-contract-to-artist', async (req, res) => {
-  // const { artistName, artistStreet, artistState, artistCountry, artistZip, artistEmail, labelName, labelStreet, labelState, labelCountry, labelZip, labelEmail, pdfBase64, fileName, contractId } = req.body;
+  
   const { artistEmail, labelEmail, pdfBase64, fileName, isContractApproved } = req.body;
   if (!artistEmail || !labelEmail || !pdfBase64 || !fileName || isContractApproved === undefined) {
     return res.status(400).json({ error: 'Missing required fields.' });
@@ -230,12 +230,14 @@ app.post('/send-contract-to-artist', async (req, res) => {
       emailSubject = 'Your Contract Has Been Approved!';
       emailBody = `
         <p>Good news! The label has approved your contract proposal.</p>
+        <p>You’ve received a contract proposal from <b>${labelEmail}</b>.</p>
         <p>You can now proceed with the next steps. Please find the contract details below and attached.</p>
       `;
     } else {
       emailSubject = 'Contract Proposal for Review';
       emailBody = `
         <p>Hello,</p>
+        <p>You’ve received a contract proposal from <b>${labelEmail}</b>.</p>
         <p>The label has reviewed your contract proposal and is now ready for your feedback.</p>
         <p>Please review the attached contract and respond accordingly.</p>
       `;
