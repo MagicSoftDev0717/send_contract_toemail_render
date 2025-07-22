@@ -133,15 +133,17 @@ app.get('/get-contract-file', async (req, res) => {
   console.log('Received contractId:', contractId);
 
   // Validate contractId and retrieve the fileName (stored during email sending)
-  const fileName = contractDatabase[contractId];  
+  const contract  = contractDatabase[contractId];  
 
-  if (!fileName) {
+  if (!contract ) {
     console.error('Contract not found for contractId:', contractId);
     return res.status(404).send('Contract not found');
   }
 
+  const { fileName } = contract; // Now we directly get the fileName for this contract
+
   const downloadsFolder = path.join(__dirname, 'contracts');  // Get the Downloads directory
-  const filePath = path.join(downloadsFolder, contractDatabase["fileName"]);  // Use Downloads folder for storing
+  const filePath = path.join(downloadsFolder, fileName);  // Use Downloads folder for storing
 
 
   if (!fs.existsSync(filePath)) {
