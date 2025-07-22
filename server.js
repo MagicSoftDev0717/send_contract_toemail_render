@@ -199,8 +199,8 @@ app.post('/update-contract-status', async (req, res) => {
 
 app.post('/send-contract-to-artist', async (req, res) => {
   // const { artistName, artistStreet, artistState, artistCountry, artistZip, artistEmail, labelName, labelStreet, labelState, labelCountry, labelZip, labelEmail, pdfBase64, fileName, contractId } = req.body;
-  const { artistEmail, labelEmail, pdfBase64, fileName } = req.body;
-  if (!artistEmail || !labelEmail || !pdfBase64 || !fileName) {
+  const { artistEmail, labelEmail, pdfBase64, fileName, isContractApproved } = req.body;
+  if (!artistEmail || !labelEmail || !pdfBase64 || !fileName || isContractApproved === undefined) {
     return res.status(400).json({ error: 'Missing required fields.' });
   }
 
