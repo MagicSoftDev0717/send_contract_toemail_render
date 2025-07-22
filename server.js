@@ -99,7 +99,7 @@ app.get('/get-contract-file', async (req, res) => {
     return res.status(404).send('Contract not found');
   }
 
-  const { fileName } = contract; // Now we directly get the fileName for this contract
+   const { fileName, artistName, artistStreet, artistState, artistCountry, artistZip, artistEmail } = contract;
 
   const downloadsFolder = path.join(__dirname, 'contracts');  // Get the Downloads directory
   const filePath = path.join(downloadsFolder, fileName);  // Use Downloads folder for storing
