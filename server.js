@@ -140,10 +140,10 @@ app.get('/get-contract-file', async (req, res) => {
     return res.status(404).send('Contract not found');
   }
 
-  const { fileName } = contract; // Now we directly get the fileName for this contract
+  const { fileName, artistName, artistStreet, artistState, artistCountry, artistZip, artistEmail } = contract;
 
   const downloadsFolder = path.join(__dirname, 'contracts');  // Get the Downloads directory
-  const filePath = path.join(downloadsFolder, fileName);  // Use Downloads folder for storing
+  const filePath = path.join(downloadsFolder, fileName, fileName);  // Use Downloads folder for storing
 
 
   if (!fs.existsSync(filePath)) {
@@ -151,10 +151,17 @@ app.get('/get-contract-file', async (req, res) => {
     return res.status(404).send('Contract file not found');
   }
 
+  const contractMetadata = {
+    artistName, artistStreet, artistState, artistCountry, artistZip, artistEmail
+  };
+
+
   // Serve the file to the frontend
   res.setHeader('Content-Type', 'application/pdf');
-  res.download(filePath, fileName);  // Automatically trigger download
+  res.send({fileMetadata: contractMetadata, filePath: filePath});  // Automatically trigger download
 });
+
+
 
 // Route for updating contract status
 app.post('/update-contract-status', async (req, res) => {
