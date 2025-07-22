@@ -60,8 +60,8 @@ app.post('/send-contract-to-label', async (req, res) => {
       replyTo: artistEmail,
       subject: 'New Artist Contract for Review',
       html: `
-        <p>Hello,</p>
-        <p>You’ve received a contract proposal from <b>${artistEmail}</b>.</p>
+        <p>Dear,${labelName}</p>
+        <p>You’ve received a contract proposal from <b>${artistName} - ${artistEmail}</b>.</p>
         <p>Click here: <a href="https://www.correctthecontract.com/contract-response?contractId=${contractId}">www.correctthecontract.com/contract-response</a></p>
         <p>Please review the attached contract and respond accordingly.</p>
       `,
@@ -199,7 +199,7 @@ app.post('/update-contract-status', async (req, res) => {
 
 app.post('/send-contract-to-artist', async (req, res) => {
   
-  const { artistEmail, labelEmail, pdfBase64, fileName, isContractApproved } = req.body;
+  const { artistName, labelName, artistEmail, labelEmail, pdfBase64, fileName, isContractApproved } = req.body;
   if (!artistEmail || !labelEmail || !pdfBase64 || !fileName || isContractApproved === undefined) {
     return res.status(400).json({ error: 'Missing required fields.' });
   }
@@ -229,15 +229,16 @@ app.post('/send-contract-to-artist', async (req, res) => {
     if (isContractApproved) {
       emailSubject = 'Your Contract Has Been Approved!';
       emailBody = `
+        <p>Hello, ${artistName}</p>
         <p>Good news! The label has approved your contract proposal.</p>
-        <p>You’ve received a contract proposal from <b>${labelEmail}</b>.</p>
+        <p>You’ve received a contract proposal from <b>${labelName} - ${labelEmail}</b>.</p>
         <p>You can now proceed with the next steps. Please find the contract details below and attached.</p>
       `;
     } else {
       emailSubject = 'Contract Proposal for Review';
       emailBody = `
-        <p>Hello,</p>
-        <p>You’ve received a contract proposal from <b>${labelEmail}</b>.</p>
+        <p>Hello, ${artistName}</p>
+        <p>You’ve received a contract proposal from <b>${labelName} - ${labelEmail}</b>.</p>
         <p>The label has reviewed your contract proposal and is now ready for your feedback.</p>
         <p>Please review the attached contract and respond accordingly.</p>
       `;
