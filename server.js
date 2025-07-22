@@ -141,7 +141,7 @@ app.get('/get-contract-file', async (req, res) => {
   }
 
   const downloadsFolder = path.join(__dirname, 'contracts');  // Get the Downloads directory
-  const filePath = path.join(downloadsFolder, fileName);  // Use Downloads folder for storing
+  const filePath = path.join(downloadsFolder, contractDatabase["fileName"]);  // Use Downloads folder for storing
 
 
   if (!fs.existsSync(filePath)) {
