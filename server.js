@@ -66,7 +66,7 @@ const contractStatusDatabase = {};
 // }
 
 // POST endpoint for sending email with attachment
-app.post('/send-contract', async (req, res) => {
+app.post('/send-contract-to-label', async (req, res) => {
   const { artistEmail, labelEmail, pdfBase64, fileName, contractId } = req.body;
   //const { artistEmail, labelEmail, fileName, contractId } = req.body;
 
@@ -217,6 +217,46 @@ app.post('/update-contract-status', async (req, res) => {
   } catch (error) {
     console.error('Error updating contract status:', error);
     res.status(500).send('Error updating contract status');
+  }
+});
+
+
+
+// POST endpoint to send contract back to the artist
+app.post('/send-contract-to-artist', async (req, res) => {
+  const { artistEmail, labelEmail, pdfBase64, fileName, contractId, fileUrl } = req.body;
+
+  if (!artistEmail || !labelEmail || !pdfBase64 || !fileName) {
+    return res.status(400).json({ error: 'Missing required fields.' });
+  }
+
+  try {
+    // Send the contract back to the artist
+    const msg = {
+      to: artistEmail,
+      from: 'darrensdesign01@gmail.com',
+      subject: 'Contract Signed by Label',
+      html: `
+        <p>Hello,</p>
+        <p>The contract has been reviewed and signed by the label.</p>
+        <p>You can download it here: <a href="${fileUrl}">${fileUrl}</a></p>
+        <p>Best regards,</p>
+      `,
+      attachments: [
+        {
+          content: pdfBase64,
+          filename: fileName,
+          type: 'application/pdf',
+          disposition: 'attachment',
+        },
+      ],
+    };
+
+    await sgMail.send(msg);
+    return res.status(200).json({ message: 'Contract sent back to the artist successfully' });
+  } catch (error) {
+    console.error('Error sending email to artist:', error);
+    return res.status(500).json({ error: 'Failed to send email to artist' });
   }
 });
 
