@@ -66,8 +66,9 @@ const contractStatusDatabase = {};
 // }
 
 // POST endpoint for sending email with attachment
+
 app.post('/send-contract-to-label', async (req, res) => {
-  const { artistEmail, labelEmail, pdfBase64, fileName, contractId } = req.body;
+  const { artistName, artistStreet, artistState, artistCountry, artistZip, artistEmail, labelEmail, pdfBase64, fileName, contractId } = req.body;
   //const { artistEmail, labelEmail, fileName, contractId } = req.body;
 
   if (!artistEmail || !labelEmail || !pdfBase64 || !fileName) {
@@ -92,7 +93,7 @@ app.post('/send-contract-to-label', async (req, res) => {
     fs.writeFileSync(filePath, buffer);
 
     // Store the contract URL in the contract database
-    contractDatabase[contractId] = fileName;
+    contractDatabase[contractId] = { fileName, artistName, artistStreet, artistState, artistCountry, artistZip, artistEmail };
 
     const msg = {
       to: labelEmail,
@@ -108,7 +109,6 @@ app.post('/send-contract-to-label', async (req, res) => {
       attachments: [
         {
           content: pdfBase64,
-          //content: goFileUrl,
           filename: fileName,
           type: 'application/pdf',
           disposition: 'attachment',
