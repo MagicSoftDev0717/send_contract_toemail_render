@@ -52,8 +52,7 @@ app.post('/send-contract-to-label', async (req, res) => {
     fs.writeFileSync(filePath, buffer);
 
     // Store the contract URL in the contract database
-    contractDatabase[contractId] = { fileName, artistName, artistStreet, artistState, artistCountry, artistZip, artistEmail,
-                                      labelName, labelStreet, labelState, labelCountry, labelZip, labelEmail };
+    contractDatabase[contractId] = { fileName, artistName, artistStreet, artistState, artistCountry, artistZip, artistEmail, labelName, labelStreet, labelState, labelCountry, labelZip, labelEmail };
 
     const msg = {
       to: labelEmail,
