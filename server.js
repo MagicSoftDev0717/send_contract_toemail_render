@@ -67,14 +67,14 @@ app.post('/send-contract-to-label', async (req, res) => {
           <p>Please review the attached contract and respond accordingly.</p>
         </body>
       `,
-      attachments: [
-        {
-          //content: pdfBase64,
-          filename: fileName,
-          type: 'application/pdf',
-          disposition: 'attachment',
-        },
-      ],
+      // attachments: [
+      //   {
+      //     content: pdfBase64,
+      //     filename: fileName,
+      //     type: 'application/pdf',
+      //     disposition: 'attachment',
+      //   },
+      // ],
     };
 
   
