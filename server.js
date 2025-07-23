@@ -60,14 +60,16 @@ app.post('/send-contract-to-label', async (req, res) => {
       replyTo: artistEmail,
       subject: 'New Artist Contract for Review',
       html: `
-        <p>Dear,${labelName}</p>
-        <p>You’ve received a contract proposal from <b>${artistName} - ${artistEmail}</b>.</p>
-        <p>Click here: <a href="https://www.correctthecontract.com/contract-response?contractId=${contractId}">www.correctthecontract.com/contract-response</a></p>
-        <p>Please review the attached contract and respond accordingly.</p>
+        <body>
+          <p>Dear,${labelName}</p>
+          <p>You’ve received a contract proposal from <b>${artistName} - ${artistEmail}.</p>
+          <p>Click here: <a href="https://www.correctthecontract.com/contract-response?contractId=${contractId}">www.correctthecontract.com/contract-response</a></p>
+          <p>Please review the attached contract and respond accordingly.</p>
+        </body>
       `,
       attachments: [
         {
-          content: pdfBase64,
+          //content: pdfBase64,
           filename: fileName,
           type: 'application/pdf',
           disposition: 'attachment',
