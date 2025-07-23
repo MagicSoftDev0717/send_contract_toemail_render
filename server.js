@@ -62,8 +62,6 @@ app.post('/send-contract-to-label', async (req, res) => {
       html: `
         <body>
           <p>Dear,${labelName}</p>
-          <p>You’ve received a contract proposal from <b>${artistName} - ${artistEmail}.</p>
-          <p>Click here: <a href="https://www.correctthecontract.com/contract-response?contractId=${contractId}">www.correctthecontract.com/contract-response</a></p>
           
         </body>
       `,
