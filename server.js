@@ -56,13 +56,15 @@ app.post('/send-contract-to-label', async (req, res) => {
 
     const msg = {
       to: labelEmail,
-      from: 'darrensdesign01@gmail.com',
+      from: 'reply@correctthecontract.com',
       replyTo: artistEmail,
       subject: 'New Artist Contract for Review',
       html: `
         <body>
-          <p>Dear,${labelName}</p>
-          
+          <p>Hello,${labelName}</p>
+          <p>You’ve received a contract proposal from <b>${artistName} - ${artistEmail}.</p>
+          <p>Click here: <a href="https://www.correctthecontract.com/contract-response?contractId=${contractId}">www.correctthecontract.com/contract-response</a></p>
+          <p>I'd appreciate your review of the attached contract and feedback.</p>
         </body>
       `,
       // attachments: [
