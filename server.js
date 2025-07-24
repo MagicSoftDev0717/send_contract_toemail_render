@@ -248,7 +248,7 @@ app.post('/send-contract-to-artist', async (req, res) => {
 
     const msg = {
       to: artistEmail,
-      from: 'darrensdesign01@gmail.com',
+      from: 'reply@correctthecontract.com',
       replyTo: labelEmail,
       subject: emailSubject,
       html: emailBody,
